@@ -154,14 +154,14 @@ export default async function plugin(bb: BbPluginApi) {
     grokUsage: {
       type: "boolean",
       label: "Add Grok Build usage to bb's usage card (takes effect after a plugin reload)",
-      default: true,
+      default: false,
     },
     renewGrokSession: {
       type: "boolean",
       label: "Renew the Grok Build login every 5 hours",
       description:
         "On each connected machine, refreshes ~/.grok/auth.json before the 6-hour access token expires. This does not open a browser.",
-      default: true,
+      default: false,
     },
   });
   let cacheMs = 5 * 60_000;
@@ -176,7 +176,7 @@ export default async function plugin(bb: BbPluginApi) {
   await applySettings();
   // bb registers providers when the plugin loads, so this setting applies
   // after a reload.
-  if ((await settings.get()).grokUsage !== false) {
+  if ((await settings.get()).grokUsage === true) {
     registerGrokProvider(bb);
     // bb's usage card shows the providers of plugins that serve this
     // discoverable contract; the provider alone does not add a Grok tab.
@@ -190,7 +190,7 @@ export default async function plugin(bb: BbPluginApi) {
 
   async function renewGrokOnConnectedHosts(force: boolean): Promise<string[]> {
     const lines: string[] = [];
-    if ((await settings.get()).renewGrokSession === false && !force) {
+    if ((await settings.get()).renewGrokSession !== true && !force) {
       return ["Grok login renewal is off. Set renewGrokSession to turn it on."];
     }
     let hosts: Host[] = [];
@@ -228,7 +228,7 @@ export default async function plugin(bb: BbPluginApi) {
   bb.background.service("grok-session", {
     async start(signal) {
       while (!signal.aborted) {
-        if ((await settings.get()).renewGrokSession !== false) {
+        if ((await settings.get()).renewGrokSession === true) {
           await renewGrokOnConnectedHosts(false);
         }
         await sleep(RENEW_CHECK_MS, signal);
