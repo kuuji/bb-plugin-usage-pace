@@ -216,7 +216,7 @@ describe("mountCardPace", () => {
     expect(JSON.parse(fetchMock.mock.calls[0]![1].body)).toEqual({
       force: false,
       machineIds: null,
-      providerId: null,
+      providerIds: [],
       maxAgeMs: 300_000,
     });
   });

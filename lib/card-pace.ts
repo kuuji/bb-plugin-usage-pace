@@ -644,7 +644,7 @@ export function mountCardPace({ signal }: { signal: AbortSignal }) {
     // Each read keeps its last value when it fails; the next run tries
     // again after REFETCH_MS.
     const [card, settings, own] = await Promise.allSettled([
-      post(CARD_RPC_URL, { force: false, machineIds: null, providerId: null, maxAgeMs: CARD_MAX_AGE_MS }),
+      post(CARD_RPC_URL, { force: false, machineIds: null, providerIds: [], maxAgeMs: CARD_MAX_AGE_MS }),
       post(SETTINGS_RPC_URL, {}),
       post(OWN_USAGE_RPC_URL, { force: false }),
     ]);
